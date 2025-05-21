@@ -8,6 +8,8 @@ from flask_bootstrap import Bootstrap
 from dotenv import load_dotenv
 from datetime import datetime
 
+from helper import add_income, add_expense, edit_income, edit_expense, delete_expense, delete_income
+
 load_dotenv()
 
 nltk.data.path.append(os.path.join(os.path.dirname(__file__), 'nltk_data'))
@@ -48,7 +50,7 @@ def tracker():
     for exp in expense_data:
         total_expenses += exp['amount']
 
-    total_exp_percent = round(total_expenses/total_income * 100)
+    total_exp_percent = round(total_expenses / total_income * 100)
 
     month_name = datetime.strptime(income_data[0]["date"], "%d/%m/%Y").strftime("%B %Y")
 
@@ -84,7 +86,7 @@ def tracker():
 
         elif action == 'edit_income':
             # TODO = FIX THIS!!
-            item_id=request.form.get('item_id')
+            item_id = request.form.get('item_id')
             # edit_income(income_data[i for i in income_data if i['id']==item_id])
             edit_income(item_id)
 
@@ -97,53 +99,14 @@ def tracker():
         elif action == 'delete_expense':
             delete_expense(request.form.get('item_id'))
 
-
             # Return response or redirect
         return redirect(url_for('tracker'))
 
     return render_template("index.html", income=income_data, expense=expense_data,
-                           total_income=total_income, total_expenses=total_expenses, total_exp_percent=total_exp_percent,
+                           total_income=total_income, total_expenses=total_expenses,
+                           total_exp_percent=total_exp_percent,
                            month=month_name)
 
-
-def add_income(data):
-    info = {
-        "income": data
-    }
-    response = requests.post(ADD_INCOME_URL, json=info)
-    print(response.status_code)
-    print(response.text)
-
-
-def add_expense(data):
-    info = {
-        "expense": data
-    }
-    response = requests.post(ADD_INCOME_URL, json=info)
-    print(response.status_code)
-    print(response.text)
-
-
-def edit_income(item_id):
-   pass
-
-
-def edit_expense(item_id):
-    pass
-
-
-def delete_income(item_id):
-    url = f"{DELETE_INCOME_URL}/{item_id}"
-    response = requests.delete(url)
-    print(response.status_code)
-    print(response.text)
-
-
-def delete_expense(item_id):
-    url = f"{DELETE_EXPENSE_URL}/{item_id}"
-    response = requests.delete(url)
-    print(response.status_code)
-    print(response.text)
 
 # TODO = COMPLETE THIS.
 @app.route("/edit/<item_id>")
