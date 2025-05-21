@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Register - Budgety</title>
+    <title>Edit - Budgety</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Google Fonts -->
@@ -39,7 +39,7 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-5">
-          <form class="bg-white p-5 rounded shadow-lg">
+          <form class="edit-record-form bg-white p-5 rounded shadow-lg">
             <!-- Title -->
             <h2 class="text-center mb-4">Edit Record</h2>
 
@@ -51,39 +51,32 @@
 
             <!-- AMOUNT -->
             <div class="form-outline mb-4">
-              <input type="email" id="registerEmail" class="form-control" required />
+              <input type="number" class="form-control" required />
               <label class="form-label" for="registerEmail">Amount</label>
             </div>
 
 
             <!-- METHOD -->
-            <select class="add_method" name="method">
-                            <option value="Account">Account</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Card">Card</option>
-                            <option value="Other">Other</option>
-                        </select>
-
-            <!-- Terms Checkbox -->
-            <div class="form-check d-flex justify-content-start mb-4">
-              <input class="form-check-input me-2" type="checkbox" value="" id="registerCheck" required />
-              <label class="form-check-label" for="registerCheck">
-                I agree to the <a href="#!">terms and conditions</a>
-              </label>
+            <div class="form-outline mb-4">
+              <select class="form-select" name="method" required>
+                <option selected disabled>Select Payment Method</option>
+                <option value="Account">Account</option>
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+                <option value="Other">Other</option>
+              </select>
+<!--              <label class="form-label select-label">Method</label>-->
+            </div>
+                      <!-- Save and Discard Buttons -->
+            <div class="row gx-3">
+              <div class="col">
+                <button type="submit" class="btn btn-success w-100">Save</button>
+              </div>
+              <div class="col">
+                <button type="reset" class="btn btn-outline-danger w-100">Discard</button>
+              </div>
             </div>
 
-            <!-- Submit Button -->
-            <button
-              type="submit"
-              class="btn btn-primary btn-block w-100 mb-4"
-            >
-              Sign Up
-            </button>
-
-            <!-- Login Redirect -->
-            <div class="text-center">
-              <p>Already have an account? <a href="/login">Login</a></p>
-            </div>
           </form>
         </div>
       </div>

@@ -85,7 +85,8 @@ def tracker():
         elif action == 'edit_income':
             # TODO = FIX THIS!!
             item_id=request.form.get('item_id')
-            edit_income(income_data[i for i in income_data if i['id']==item_id])
+            # edit_income(income_data[i for i in income_data if i['id']==item_id])
+            edit_income(item_id)
 
         elif action == 'delete_income':
             delete_income(request.form.get('item_id'))
