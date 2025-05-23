@@ -2,19 +2,19 @@ import os
 import nltk
 import requests
 
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, session
 from flask_bootstrap import Bootstrap
-# from nltk.tokenize import sent_tokenize
 from dotenv import load_dotenv
 from datetime import datetime
 
-from helper import add_income, add_expense, edit_income, edit_expense, delete_expense, delete_income
+from helper import add_income, add_expense, delete_expense, delete_income, get_data
 
 load_dotenv()
 
 nltk.data.path.append(os.path.join(os.path.dirname(__file__), 'nltk_data'))
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
 Bootstrap(app)
 
 # GET_INCOME_URL = os.getenv("GET_INCOME_API")
@@ -85,16 +85,17 @@ def tracker():
             add_expense(data)
 
         elif action == 'edit_income':
-            # TODO = FIX THIS!!
             item_id = request.form.get('item_id')
-            # edit_income(income_data[i for i in income_data if i['id']==item_id])
-            edit_income(item_id)
+            session['item_data'] = get_data(item_id, income_data)
+            return redirect(url_for('edit', item_id=item_id, tran="income"))
 
         elif action == 'delete_income':
             delete_income(request.form.get('item_id'))
 
         elif action == 'edit_expense':
-            edit_expense(request.form.get('item_id'))
+            item_id = request.form.get('item_id')
+            session['item_data'] = get_data(item_id, expense_data)
+            return redirect(url_for('edit', item_id=item_id, tran="expense"))
 
         elif action == 'delete_expense':
             delete_expense(request.form.get('item_id'))
@@ -109,10 +110,13 @@ def tracker():
 
 
 # TODO = COMPLETE THIS.
-@app.route("/edit/<item_id>")
-def edit(item_id):
-    print(item_id)
-    return render_template("edit.html")
+@app.route("/edit/<tran>/<item_id>", methods=["GET", "POST"])
+def edit(tran, item_id):
+    if request.method == "POST":
+        redirect(url_for("tracker"))
+
+    item = session.pop('item_data', {})
+    return render_template("edit.html", **item)
 
 
 if __name__ == '__main__':
