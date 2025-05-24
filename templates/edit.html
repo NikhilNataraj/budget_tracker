@@ -45,14 +45,14 @@
 
             <!-- DESCRIPTION -->
             <div class="form-outline mb-4">
-              <input type="text" id="registerName" class="form-control" required />
-              <label class="form-label" for="registerName">{{ description }}</label>
+              <input type="text" id="registerName" class="form-control" required value="{{ description }}" />
+              <label class="form-label" for="registerName">Description</label>
             </div>
 
             <!-- AMOUNT -->
             <div class="form-outline mb-4">
-              <input type="number" class="form-control" required />
-              <label class="form-label">{{ amount }}</label>
+              <input type="number" class="form-control" required value="{{ amount }}">
+              <label class="form-label">Amount</label>
             </div>
 
 
@@ -65,15 +65,27 @@
                 <option value="Card">Card</option>
                 <option value="Other">Other</option>
               </select>
-<!--              <label class="form-label select-label">Method</label>-->
+            </div>
+
+            <!--DATE-->
+            <div class="date-container input-group" style="margin-bottom: 20px;">
+                <input type="text" name="date" id="datepicker" class="form-control" value="{{ date }}" readonly />
+                <button type="button" class="btn btn-outline-secondary" id="open-datepicker">
+                  <!-- calendar icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                       class="bi bi-calendar-event" viewBox="0 0 16 16">
+                    <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                  </svg>
+                </button>
             </div>
                       <!-- Save and Discard Buttons -->
             <div class="row gx-3">
               <div class="col">
-                <button type="submit" class="btn btn-success w-100">Save</button>
+                <button type="submit" class="btn btn-success w-100" value="save">Save</button>
               </div>
               <div class="col">
-                <button type="reset" class="btn btn-outline-danger w-100">Discard</button>
+                <button type="submit" class="btn btn-outline-danger w-100" value="discard">Discard</button>
               </div>
             </div>
 

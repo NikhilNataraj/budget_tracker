@@ -5,6 +5,9 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:100,300,400,600" rel="stylesheet" type="text/css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
         <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+        <!-- Flatpickr CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
         <title>Budget Tracker</title>
     </head>
     <body>
@@ -48,16 +51,31 @@
             <div class="add">
                 <div class="add__container">
                     <form method="POST" action="{{ url_for('tracker') }}">
-                        <input type="text" class="add__description" name="description" placeholder="Add description">
-                        <input type="number" class="add__value" name="amount" placeholder="Value">
-                        <select class="add_method" name="method">
-                            <option value="Account">Account</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Card">Card</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        <button type="submit" name="action" value="income" class="btn btn-outline-success">Income</button>
-                        <button type="submit" name="action" value="expense" class="btn btn-outline-danger">Expense</button>
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <!-- DATE PICKER  -->
+                            <div class="date-container input-group">
+                              <input type="text" name="date" id="datepicker" class="form-control" placeholder="Select date" readonly />
+                              <button type="button" class="btn btn-outline-secondary" id="open-datepicker">
+                                <!-- calendar icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-calendar-event" viewBox="0 0 16 16">
+                                  <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+                                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                                </svg>
+                              </button>
+                            </div>
+
+                            <input type="text" class="add__description" name="description" placeholder="Add description">
+                            <input type="number" class="add__value" name="amount" placeholder="Value">
+                            <select class="add_method" name="method">
+                                <option value="Account">Account</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Card">Card</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <button type="submit" name="action" value="income" class="btn btn-outline-success">Income</button>
+                            <button type="submit" name="action" value="expense" class="btn btn-outline-danger">Expense</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -116,7 +134,6 @@
                                 <div class="item__description">{{ exp['description'] }}</div>
                                 <div class="right clearfix">
                                     <div class="item__value">- {{ exp['amount'] }}</div>
-    <!--                                <div class="item__percentage">{{ (exp['amount'] / total_expenses * 100) | round(0) | int }}%</div>-->
                                     {% set percentage = (exp['amount'] / total_expenses * 100) if total_expenses > 0 else 0 %}
                                     <div class="item__percentage">
                                       {% if percentage < 1 and percentage > 0 %}
@@ -155,5 +172,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- Flatpickr JS -->
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+          const datepickerInput = document.getElementById('datepicker');
+          const picker = flatpickr(datepickerInput, {
+            dateFormat: "Y-m-d",
+            allowInput: true
+          });
+
+          document.getElementById('open-datepicker').addEventListener('click', () => {
+            picker.open();
+          });
+        </script>
+
     </body>
 </html>

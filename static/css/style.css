@@ -117,12 +117,27 @@ body {
     padding: 14px;
     border-bottom: 1px solid #e7e7e7;
     background-color: #f7f7f7;
+    display: flex;
+    min-height: 80px;
+    align-items: center;
 }
 
 .add__container {
     margin: 0 auto;
     text-align: center;
+    width: 100%;
+    max-width: 1100px;
 }
+
+.add__container form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  flex-wrap: nowrap;
+}
+
 
 .add__type {
     width: 55px;
@@ -176,6 +191,20 @@ body {
 }
 
 .add__btn:focus { outline: none; }
+
+.add input,
+.add select,
+.add button {
+  height: 43px;
+  vertical-align: middle;
+}
+
+.date-container {
+  width: fit-content;
+  max-width: 160px; /* adjust as needed */
+  display: flex;
+  align-items: center;
+}
 
 /***** LISTS *****/
 .container {

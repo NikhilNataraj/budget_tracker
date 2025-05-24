@@ -38,9 +38,9 @@ def tracker():
     # income_data = requests.get(GET_INCOME_URL).json()['income']
     # expense_data = requests.get(GET_EXPENSE_URL).json()['expenses']
 
-    income_data = [{'date': '01/05/2025', 'description': 'Salary', 'amount': 49840, 'method': 'Account', 'id': 2}]
-    expense_data = [{'date': '05/05/2025', 'description': 'Rent', 'amount': 16500, 'method': 'Cash', 'id': 2},
-                    {'date': '10/05/2025', 'description': 'Investments', 'amount': 20000, 'method': 'Account', 'id': 3}]
+    income_data = [{'date': '2025-05-01', 'description': 'Salary', 'amount': 49840, 'method': 'Account', 'id': 2}]
+    expense_data = [{'date': '2025-05-04', 'description': 'Rent', 'amount': 16500, 'method': 'Cash', 'id': 2},
+                    {'date': '2025-05-10', 'description': 'Investments', 'amount': 20000, 'method': 'Account', 'id': 3}]
 
     total_income = 0
     for inc in income_data:
@@ -52,18 +52,19 @@ def tracker():
 
     total_exp_percent = round(total_expenses / total_income * 100)
 
-    month_name = datetime.strptime(income_data[0]["date"], "%d/%m/%Y").strftime("%B %Y")
+    month_name = datetime.strptime(income_data[0]["date"], "%Y-%m-%d").strftime("%B %Y")
 
     if request.method == 'POST':
 
-        action = request.form.get('action')  # 'income' or 'expense'
+        action = request.form.get('action')  # Which Button was clicked
 
         if action == 'income':
             description = request.form.get('description')
             amount = float(request.form.get('amount'))
             method = request.form.get('method')
+            tran_date = request.form.get('date')
             data = {
-                "date": datetime.now().strftime("%d/%m/%Y"),
+                "date": tran_date,
                 "description": description,
                 "amount": amount,
                 "method": method
@@ -75,8 +76,9 @@ def tracker():
             description = request.form.get('description')
             amount = float(request.form.get('amount'))
             method = request.form.get('method')
+            tran_date = request.form.get('date')
             data = {
-                "date": datetime.now().strftime("%d/%m/%Y"),
+                "date": tran_date,
                 "description": description,
                 "amount": amount,
                 "method": method
@@ -113,6 +115,27 @@ def tracker():
 @app.route("/edit/<tran>/<item_id>", methods=["GET", "POST"])
 def edit(tran, item_id):
     if request.method == "POST":
+        action = request.form.get('action')  # Which Button was clicked
+        if action == "save":
+            description = request.form.get('description')
+            amount = float(request.form.get('amount'))
+            method = request.form.get('method')
+            tran_date = request.form.get('date')
+            data = {
+                "date": tran_date,
+                "description": description,
+                "amount": amount,
+                "method": method
+            }
+            if tran == "income":
+                edit_url = f"{EDIT_INCOME_URL}/{item_id}"
+            else:
+                edit_url = f"{EDIT_EXPENSE_URL}/{item_id}"
+
+            response = requests.post(edit_url, data=data)
+            print(response.status_code)
+            print(response.text)
+
         redirect(url_for("tracker"))
 
     item = session.pop('item_data', {})

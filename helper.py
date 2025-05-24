@@ -51,5 +51,6 @@ def get_data(item_id, data):
                 'description': i['description'],
                 'amount': i['amount'],
                 'method': i['method'],
+                'date': i['date'],
             }
     return item
