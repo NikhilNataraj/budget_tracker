@@ -33,32 +33,36 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css" />
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   </head>
 
   <body class="d-flex align-items-center justify-content-center vh-100 bg-light">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-5">
-          <form class="edit-record-form bg-white p-5 rounded shadow-lg" action="{{ url_for('tracker') }}">
+          <form class="edit-record-form bg-white p-5 rounded shadow-lg" method="POST"
+                action="{{ url_for('edit', tran=tran, item_id=id) }}">
             <!-- Title -->
             <h2 class="text-center mb-4">Edit Record</h2>
 
             <!-- DESCRIPTION -->
             <div class="form-outline mb-4">
-              <input type="text" id="registerName" class="form-control" required value="{{ description }}" />
+              <input type="text" id="registerName" class="form-control" name="description" value="{{ description }}" />
               <label class="form-label" for="registerName">Description</label>
             </div>
 
             <!-- AMOUNT -->
             <div class="form-outline mb-4">
-              <input type="number" class="form-control" required value="{{ amount }}">
+              <input type="number" class="form-control" name="amount" value="{{ amount }}">
               <label class="form-label">Amount</label>
             </div>
 
 
             <!-- METHOD -->
             <div class="form-outline mb-4">
-              <select class="form-select" name="method" required>
+              <select class="form-select" name="method">
                 <option selected>{{ method }}</option>
                 <option value="Account">Account</option>
                 <option value="Cash">Cash</option>
@@ -82,10 +86,10 @@
                       <!-- Save and Discard Buttons -->
             <div class="row gx-3">
               <div class="col">
-                <button type="submit" class="btn btn-success w-100" value="save">Save</button>
+                <button type="submit" class="btn btn-success w-100" name="action" value="save">Save</button>
               </div>
               <div class="col">
-                <button type="submit" class="btn btn-outline-danger w-100" value="discard">Discard</button>
+                <button type="submit" class="btn btn-outline-danger w-100" name="action" value="discard">Discard</button>
               </div>
             </div>
 
@@ -99,5 +103,17 @@
       type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+      const datepickerInput = document.getElementById('datepicker');
+      const picker = flatpickr(datepickerInput, {
+        dateFormat: "Y-m-d",
+        allowInput: true
+      });
+
+      document.getElementById('open-datepicker').addEventListener('click', () => {
+        picker.open();
+      });
+    </script>
   </body>
 </html>

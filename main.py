@@ -33,7 +33,7 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/", methods=["GET", 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def tracker():
     # income_data = requests.get(GET_INCOME_URL).json()['income']
     # expense_data = requests.get(GET_EXPENSE_URL).json()['expenses']
@@ -69,7 +69,6 @@ def tracker():
                 "amount": amount,
                 "method": method
             }
-            # process as income
             add_income(data)
 
         elif action == 'expense':
@@ -122,23 +121,27 @@ def edit(tran, item_id):
             method = request.form.get('method')
             tran_date = request.form.get('date')
             data = {
-                "date": tran_date,
-                "description": description,
-                "amount": amount,
-                "method": method
+                tran: {
+                    "date": tran_date,
+                    "description": description,
+                    "amount": amount,
+                    "method": method
+                }
             }
+            print(data)
             if tran == "income":
                 edit_url = f"{EDIT_INCOME_URL}/{item_id}"
             else:
                 edit_url = f"{EDIT_EXPENSE_URL}/{item_id}"
 
-            response = requests.post(edit_url, data=data)
+            response = requests.put(edit_url, json=data)
             print(response.status_code)
             print(response.text)
 
-        redirect(url_for("tracker"))
+        return redirect(url_for("tracker"))
 
     item = session.pop('item_data', {})
+    item['tran'] = tran
     return render_template("edit.html", **item)
 
 
