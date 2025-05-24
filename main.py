@@ -1,5 +1,4 @@
 import os
-import nltk
 import requests
 
 from flask import Flask, render_template, request, url_for, redirect, session
@@ -10,8 +9,6 @@ from datetime import datetime
 from helper import add_income, add_expense, delete_expense, delete_income, get_data
 
 load_dotenv()
-
-nltk.data.path.append(os.path.join(os.path.dirname(__file__), 'nltk_data'))
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -40,7 +37,8 @@ def tracker():
 
     income_data = [{'date': '2025-05-01', 'description': 'Salary', 'amount': 49840, 'method': 'Account', 'id': 2}]
     expense_data = [{'date': '2025-05-04', 'description': 'Rent', 'amount': 16500, 'method': 'Cash', 'id': 2},
-                    {'date': '2025-05-10', 'description': 'Investments', 'amount': 20000, 'method': 'Account', 'id': 3}]
+                    {'date': '2025-05-10', 'description': 'Investments', 'amount': 20000, 'method': 'Account', 'id': 3},
+                    {'date': '2025-05-24', 'description': 'Flight tickets', 'amount': 3588, 'method': 'Card', 'id': 4}]
 
     total_income = 0
     for inc in income_data:
@@ -95,6 +93,7 @@ def tracker():
 
         elif action == 'edit_expense':
             item_id = request.form.get('item_id')
+            print(item_id)
             session['item_data'] = get_data(item_id, expense_data)
             return redirect(url_for('edit', item_id=item_id, tran="expense"))
 
@@ -110,7 +109,6 @@ def tracker():
                            month=month_name)
 
 
-# TODO = COMPLETE THIS.
 @app.route("/edit/<tran>/<item_id>", methods=["GET", "POST"])
 def edit(tran, item_id):
     if request.method == "POST":

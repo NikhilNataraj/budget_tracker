@@ -43,9 +43,10 @@ def delete_expense(item_id):
 
 
 def get_data(item_id, data):
+    item_id = int(item_id)
     item = None
     for i in data:
-        if i['id'] == int(item_id):
+        if i['id'] == item_id:
             item = {
                 'id': item_id,
                 'description': i['description'],
