@@ -1,8 +1,10 @@
 import os
 import requests
 
-from flask import Flask, render_template, request, url_for, redirect, session
+from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_bootstrap import Bootstrap
+from flask_login import login_user, LoginManager, login_required, logout_user, UserMixin
+from werkzeug.security import check_password_hash
 from dotenv import load_dotenv
 from datetime import datetime
 
@@ -12,7 +14,12 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+login_manager = LoginManager()
+login_manager.init_app(app)
 Bootstrap(app)
+
+USER = os.getenv("USER")
+PASSWORD = os.getenv("PASSWORD")
 
 # GET_INCOME_URL = os.getenv("GET_INCOME_API")
 ADD_INCOME_URL = os.getenv("ADD_INCOME_API")
@@ -25,12 +32,43 @@ EDIT_EXPENSE_URL = os.getenv("EDIT_EXPENSE_API")
 DELETE_EXPENSE_URL = os.getenv("DELETE_EXPENSE_API")
 
 
-@app.route("/login")
+class User(UserMixin):
+    def __init__(self, id, email, password):
+        self.id = id
+        self.email = email
+        self.password = password
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id == "1":  # fixed ID for now
+        return User(id="1", email=USER, password=PASSWORD)
+    return None
+
+@app.route("/")
+def reroute():
+    return redirect(url_for("login"))
+
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        if email == USER and check_password_hash(PASSWORD, password):
+            user = User(id="1", email=email, password=PASSWORD)
+            login_user(user)
+            return redirect(url_for("tracker"))
+        else:
+            flash("Invalid email or password")
+            return redirect(url_for("login"))
+
     return render_template("login.html")
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/tracker", methods=["GET", "POST"])
+@login_required
 def tracker():
     # income_data = requests.get(GET_INCOME_URL).json()['income']
     # expense_data = requests.get(GET_EXPENSE_URL).json()['expenses']
@@ -106,7 +144,7 @@ def tracker():
     return render_template("index.html", income=income_data, expense=expense_data,
                            total_income=total_income, total_expenses=total_expenses,
                            total_exp_percent=total_exp_percent,
-                           month=month_name)
+                           month=month_name, logged_in=True)
 
 
 @app.route("/edit/<tran>/<item_id>", methods=["GET", "POST"])
@@ -141,6 +179,14 @@ def edit(tran, item_id):
     item = session.pop('item_data', {})
     item['tran'] = tran
     return render_template("edit.html", **item)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out.")
+    return redirect(url_for("login"))
 
 
 if __name__ == '__main__':
