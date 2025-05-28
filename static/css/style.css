@@ -23,6 +23,12 @@ body {
     font-weight: 400;
 }
 
+.logout-link {
+  float: right;
+  margin-bottom: 2px;
+  height: 40px;
+}
+
 .right { float: right; }
 .red { color: red !important; }
 .red-focus:focus { border: 1px solid red !important; }

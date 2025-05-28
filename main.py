@@ -151,6 +151,7 @@ def tracker():
 def edit(tran, item_id):
     if request.method == "POST":
         action = request.form.get('action')  # Which Button was clicked
+
         if action == "save":
             description = request.form.get('description')
             amount = float(request.form.get('amount'))
@@ -164,15 +165,14 @@ def edit(tran, item_id):
                     "method": method
                 }
             }
-            print(data)
             if tran == "income":
                 edit_url = f"{EDIT_INCOME_URL}/{item_id}"
             else:
                 edit_url = f"{EDIT_EXPENSE_URL}/{item_id}"
 
             response = requests.put(edit_url, json=data)
-            print(response.status_code)
-            print(response.text)
+            # print(response.status_code)
+            # print(response.text)
 
         return redirect(url_for("tracker"))
 
@@ -188,6 +188,10 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for("login"))
 
+
+@app.route('/test')
+def test():
+    return render_template("test.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
