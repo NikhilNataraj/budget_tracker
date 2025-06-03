@@ -55,3 +55,11 @@ def get_data(item_id, data):
                 'date': i['date'],
             }
     return item
+
+
+def get_total(arr):
+    total = 0
+    for t in arr:
+        total += t['amount']
+
+    return total

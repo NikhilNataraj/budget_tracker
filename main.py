@@ -8,7 +8,8 @@ from werkzeug.security import check_password_hash
 from dotenv import load_dotenv
 from datetime import datetime
 
-from helper import add_income, add_expense, delete_expense, delete_income, get_data
+from helper import add_income, add_expense, delete_expense, delete_income, get_data, get_total
+from API import read_data, update_row, create_row, create_sheet, delete_sheet, delete_row
 
 load_dotenv()
 
@@ -21,16 +22,6 @@ Bootstrap(app)
 USER = os.getenv("USER")
 PASSWORD = os.getenv("PASSWORD")
 
-# GET_INCOME_URL = os.getenv("GET_INCOME_API")
-ADD_INCOME_URL = os.getenv("ADD_INCOME_API")
-EDIT_INCOME_URL = os.getenv("EDIT_INCOME_API")
-DELETE_INCOME_URL = os.getenv("DELETE_INCOME_API")
-
-# GET_EXPENSE_URL = os.getenv("GET_EXPENSE_API")
-ADD_EXPENSE_URL = os.getenv("ADD_EXPENSE_API")
-EDIT_EXPENSE_URL = os.getenv("EDIT_EXPENSE_API")
-DELETE_EXPENSE_URL = os.getenv("DELETE_EXPENSE_API")
-
 
 class User(UserMixin):
     def __init__(self, id, email, password):
@@ -41,9 +32,10 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id == "1":  # fixed ID for now
+    if user_id == "1":
         return User(id="1", email=USER, password=PASSWORD)
     return None
+
 
 @app.route("/")
 def reroute():
@@ -70,28 +62,22 @@ def login():
 @app.route("/tracker", methods=["GET", "POST"])
 @login_required
 def tracker():
-    # income_data = requests.get(GET_INCOME_URL).json()['income']
-    # expense_data = requests.get(GET_EXPENSE_URL).json()['expenses']
+    # TODO: Completed the comprehension of the data from API
+    income_data = read_data("Income")
+    expense_data = read_data("Expenses")
 
-    income_data = [{'date': '2025-05-01', 'description': 'Salary', 'amount': 49840, 'method': 'Account', 'id': 2}]
-    expense_data = [{'date': '2025-05-04', 'description': 'Rent', 'amount': 16500, 'method': 'Cash', 'id': 2},
-                    {'date': '2025-05-10', 'description': 'Investments', 'amount': 20000, 'method': 'Account', 'id': 3},
-                    {'date': '2025-05-24', 'description': 'Flight tickets', 'amount': 3588, 'method': 'Card', 'id': 4}]
+    # income_data = [{'date': '2025-05-01', 'description': 'Salary', 'amount': 49840, 'method': 'Account', 'id': 2}]
+    # expense_data = [{'date': '2025-05-04', 'description': 'Rent', 'amount': 16500, 'method': 'Cash', 'id': 2},
+    #                 {'date': '2025-05-10', 'description': 'Investments', 'amount': 20000, 'method': 'Account', 'id': 3},
+    #                 {'date': '2025-05-24', 'description': 'Flight tickets', 'amount': 3588, 'method': 'Card', 'id': 4}]
 
-    total_income = 0
-    for inc in income_data:
-        total_income += inc['amount']
-
-    total_expenses = 0
-    for exp in expense_data:
-        total_expenses += exp['amount']
-
+    total_income = get_total(income_data)
+    total_expenses = get_total(expense_data)
     total_exp_percent = round(total_expenses / total_income * 100)
 
     month_name = datetime.strptime(income_data[0]["date"], "%Y-%m-%d").strftime("%B %Y")
 
     if request.method == 'POST':
-
         action = request.form.get('action')  # Which Button was clicked
 
         if action == 'income':
@@ -192,6 +178,7 @@ def logout():
 @app.route('/test')
 def test():
     return render_template("test.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
