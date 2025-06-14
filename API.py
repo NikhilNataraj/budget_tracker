@@ -14,22 +14,9 @@ def read_data(sheet):
         'sheet': sheet
     }
     response = requests.get(BASE_URL, params=params)
-    print(response.json())
+    return response.json()
 
-
-expense_data = read_data("Expenses")
-print(type(expense_data))
-# data_dict_arr = []
-# for index in range(len(expense_data)):
-#     if index > 0:
-#         data_dict_arr.append({
-#             'ID': expense_data[index][0],
-#             'Date': expense_data[index][1],
-#             'Description': expense_data[index][2],
-#             'Amount': expense_data[index][3],
-#             'Method': expense_data[index][4]
-#         })
-
+# print(read_data("Income"))
 
 # === 2. CREATE ROW (POST) ===
 def create_row(sheet, info):
@@ -110,3 +97,21 @@ def delete_sheet(sheet_name):
 
 
 # delete_sheet("CreditCard")
+
+def convert_to_dict(data):
+    """
+    Function to convert data from list to list of dictionaries for income and expense data
+    :param data: list
+    :return: list of dictionaries
+    """
+    data_dict_arr = []
+    for index in range(len(data)):
+        if index > 0:
+            data_dict_arr.append({
+                'ID': data[index][0],
+                'Date': data[index][1],
+                'Description': data[index][2],
+                'Amount': data[index][3],
+                'Method': data[index][4]
+            })
+    return data_dict_arr

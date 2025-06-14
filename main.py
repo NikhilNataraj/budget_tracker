@@ -8,8 +8,8 @@ from werkzeug.security import check_password_hash
 from dotenv import load_dotenv
 from datetime import datetime
 
-from helper import add_income, add_expense, delete_expense, delete_income, get_data, get_total
-from API import read_data, update_row, create_row, create_sheet, delete_sheet, delete_row
+from helper import get_data, get_total
+from API import read_data, update_row, create_row, create_sheet, delete_sheet, delete_row, convert_to_dict
 
 load_dotenv()
 
@@ -62,9 +62,8 @@ def login():
 @app.route("/tracker", methods=["GET", "POST"])
 @login_required
 def tracker():
-    # TODO: Completed the comprehension of the data from API
-    income_data = read_data("Income")
-    expense_data = read_data("Expenses")
+    income_data = convert_to_dict(read_data("Income"))
+    expense_data = convert_to_dict(read_data("Expenses"))
 
     # income_data = [{'date': '2025-05-01', 'description': 'Salary', 'amount': 49840, 'method': 'Account', 'id': 2}]
     # expense_data = [{'date': '2025-05-04', 'description': 'Rent', 'amount': 16500, 'method': 'Cash', 'id': 2},
@@ -75,12 +74,12 @@ def tracker():
     total_expenses = get_total(expense_data)
     total_exp_percent = round(total_expenses / total_income * 100)
 
-    month_name = datetime.strptime(income_data[0]["date"], "%Y-%m-%d").strftime("%B %Y")
+    month_name = datetime.strptime(income_data[0]["Date"], "%Y-%m-%d").strftime("%B %Y")
 
     if request.method == 'POST':
         action = request.form.get('action')  # Which Button was clicked
 
-        if action == 'income':
+        if action == 'income' or action == 'expense':
             description = request.form.get('description')
             amount = float(request.form.get('amount'))
             method = request.form.get('method')
@@ -91,38 +90,25 @@ def tracker():
                 "amount": amount,
                 "method": method
             }
-            add_income(data)
 
-        elif action == 'expense':
-            description = request.form.get('description')
-            amount = float(request.form.get('amount'))
-            method = request.form.get('method')
-            tran_date = request.form.get('date')
-            data = {
-                "date": tran_date,
-                "description": description,
-                "amount": amount,
-                "method": method
-            }
-            # process as expense
-            add_expense(data)
+            create_row(sheet="Income", info=data) if action == 'income' else create_row(sheet="Expenses", info=data)
+
 
         elif action == 'edit_income':
             item_id = request.form.get('item_id')
             session['item_data'] = get_data(item_id, income_data)
-            return redirect(url_for('edit', item_id=item_id, tran="income"))
+            return redirect(url_for('edit', item_id=item_id, tran="Income"))
 
         elif action == 'delete_income':
-            delete_income(request.form.get('item_id'))
+            delete_row("Income", request.form.get('item_id'))
 
         elif action == 'edit_expense':
             item_id = request.form.get('item_id')
-            print(item_id)
             session['item_data'] = get_data(item_id, expense_data)
-            return redirect(url_for('edit', item_id=item_id, tran="expense"))
+            return redirect(url_for('edit', item_id=item_id, tran="Expenses"))
 
         elif action == 'delete_expense':
-            delete_expense(request.form.get('item_id'))
+            delete_row("Income", request.form.get('item_id'))
 
             # Return response or redirect
         return redirect(url_for('tracker'))
@@ -144,21 +130,12 @@ def edit(tran, item_id):
             method = request.form.get('method')
             tran_date = request.form.get('date')
             data = {
-                tran: {
                     "date": tran_date,
                     "description": description,
                     "amount": amount,
                     "method": method
                 }
-            }
-            if tran == "income":
-                edit_url = f"{EDIT_INCOME_URL}/{item_id}"
-            else:
-                edit_url = f"{EDIT_EXPENSE_URL}/{item_id}"
-
-            response = requests.put(edit_url, json=data)
-            # print(response.status_code)
-            # print(response.text)
+            update_row(sheet=tran, row=item_id, info=data)
 
         return redirect(url_for("tracker"))
 
@@ -173,11 +150,6 @@ def logout():
     logout_user()
     flash("You have been logged out.")
     return redirect(url_for("login"))
-
-
-@app.route('/test')
-def test():
-    return render_template("test.html")
 
 
 if __name__ == '__main__':

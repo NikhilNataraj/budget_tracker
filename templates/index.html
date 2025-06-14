@@ -119,13 +119,13 @@
                         <form method="POST" action="{{ url_for('tracker') }}">
                             {% for inc in income %}
                             <div class="item clearfix" id="income-0">
-                                <div class="item__description">{{ inc['description'] }}</div>
+                                <div class="item__description">{{ inc['Description'] }}</div>
                                 <div class="right clearfix">
-                                    <div class="item__value">+ {{ inc['amount'] }}</div>
+                                    <div class="item__value">+ {{ inc['Amount'] }}</div>
                                     <div class="button-container" style="display: flex; gap: 7px;">
                                         <!--EDIT BUTTON-->
                                         <div class="item__delete">
-                                            <input type="hidden" name="item_id" value="{{ inc['id'] }}">
+                                            <input type="hidden" name="item_id" value="{{ inc['ID'] }}">
                                             <button class="item__delete--btn" type="submit" name="action"
                                                     value="edit_income">
                                                 <i class="ion-ios-close-outline">
@@ -137,7 +137,7 @@
                                         </div>
                                        <!-- DELETE BUTTON -->
                                         <div class="item__delete">
-                                            <input type="hidden" name="item_id" value="{{ inc['id'] }}">
+                                            <input type="hidden" name="item_id" value="{{ inc['ID'] }}">
                                             <button class="item__delete--btn" type="submit" name="action"
                                                     value="delete_income">
                                                 <i class="ion-ios-close-outline">
@@ -161,11 +161,11 @@
                     <h2 class="expenses__title">Expenses</h2>
                     <div class="expenses__list">
                         {% for exp in expense %}
-                        <div class="item clearfix" id="expense-{{ exp['id'] }}"> {# Good practice to use actual ID for unique element IDs #}
-                            <div class="item__description">{{ exp['description'] }}</div>
+                        <div class="item clearfix" id="expense-{{ exp['ID'] }}"> {# Good practice to use actual ID for unique element IDs #}
+                            <div class="item__description">{{ exp['Description'] }}</div>
                             <div class="right clearfix">
-                                <div class="item__value">- {{ exp['amount'] }}</div>
-                                {% set percentage = (exp['amount'] / total_expenses * 100) if total_expenses > 0 else 0 %}
+                                <div class="item__value">- {{ exp['Amount'] }}</div>
+                                {% set percentage = (exp['Amount'] / total_expenses * 100) if total_expenses > 0 else 0 %}
                                 <div class="item__percentage">
                                   {% if percentage < 1 and percentage > 0 %}
                                     &lt;1%
@@ -176,7 +176,7 @@
                                 <div class="button-container" style="display: flex; gap: 7px;">
                                     <div class="item__delete">
                                         <form method="POST" action="{{ url_for('tracker') }}" style="display: inline;">
-                                            <input type="hidden" name="item_id" value="{{ exp['id'] }}">
+                                            <input type="hidden" name="item_id" value="{{ exp['ID'] }}">
                                             <button class="item__delete--btn" type="submit" name="action"
                                                     value="edit_expense">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
@@ -187,7 +187,7 @@
                                     </div>
                                     <div class="item__delete">
                                         <form method="POST" action="{{ url_for('tracker') }}" style="display: inline;">
-                                            <input type="hidden" name="item_id" value="{{ exp['id'] }}">
+                                            <input type="hidden" name="item_id" value="{{ exp['ID'] }}">
                                             <button class="item__delete--btn" type="submit" name="action" value="delete_expense">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                                   <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>

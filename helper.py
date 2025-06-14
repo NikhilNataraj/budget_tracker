@@ -1,47 +1,3 @@
-import requests
-import os
-
-ADD_INCOME_URL = os.getenv("ADD_INCOME_API")
-EDIT_INCOME_URL = os.getenv("EDIT_INCOME_API")
-DELETE_INCOME_URL = os.getenv("DELETE_INCOME_API")
-
-ADD_EXPENSE_URL = os.getenv("ADD_EXPENSE_API")
-EDIT_EXPENSE_URL = os.getenv("EDIT_EXPENSE_API")
-DELETE_EXPENSE_URL = os.getenv("DELETE_EXPENSE_API")
-
-
-def add_income(data):
-    info = {
-        "income": data
-    }
-    response = requests.post(ADD_INCOME_URL, json=info)
-    print(response.status_code)
-    print(response.text)
-
-
-def add_expense(data):
-    info = {
-        "expense": data
-    }
-    response = requests.post(ADD_EXPENSE_URL, json=info)
-    print(response.status_code)
-    print(response.text)
-
-
-def delete_income(item_id):
-    url = f"{DELETE_INCOME_URL}/{item_id}"
-    response = requests.delete(url)
-    print(response.status_code)
-    print(response.text)
-
-
-def delete_expense(item_id):
-    url = f"{DELETE_EXPENSE_URL}/{item_id}"
-    response = requests.delete(url)
-    print(response.status_code)
-    print(response.text)
-
-
 def get_data(item_id, data):
     item_id = int(item_id)
     item = None
@@ -49,10 +5,10 @@ def get_data(item_id, data):
         if i['id'] == item_id:
             item = {
                 'id': item_id,
-                'description': i['description'],
-                'amount': i['amount'],
-                'method': i['method'],
-                'date': i['date'],
+                'description': i['Description'],
+                'amount': i['Amount'],
+                'method': i['Method'],
+                'date': i['Date'],
             }
     return item
 
@@ -60,6 +16,6 @@ def get_data(item_id, data):
 def get_total(arr):
     total = 0
     for t in arr:
-        total += t['amount']
+        total += t['Amount']
 
     return total
