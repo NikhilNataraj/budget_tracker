@@ -21,16 +21,17 @@ def get_total(arr):
     return total
 
 
-def unpack_data(form_data):
+def pack_data(form_data, item_id):
     description = form_data.get('description')
     amount = float(form_data.get('amount'))
     method = form_data.get('method')
     tran_date = form_data.get('date')
     data = {
-        "date": tran_date,
-        "description": description,
-        "amount": amount,
-        "method": method
+        "ID": item_id,
+        "Date": tran_date,
+        "Description": description,
+        "Amount": amount,
+        "Method": method
     }
 
     return data

@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash
 from dotenv import load_dotenv
 from datetime import datetime
 
-from helper import get_data, get_total, unpack_data
+from helper import get_data, get_total, pack_data
 from API import read_data, update_row, create_row, create_sheet, delete_sheet, delete_row, convert_to_dict
 
 load_dotenv()
@@ -79,7 +79,7 @@ def tracker():
         action = request.form.get('action')  # Which Button was clicked
 
         if action == 'income' or action == 'expense':
-            data = unpack_data(request.form)
+            data = pack_data(request.form, len(expense_data))
             create_row(sheet="Income", info=data) if action == 'income' else create_row(sheet="Expenses", info=data)
 
 
@@ -93,6 +93,7 @@ def tracker():
 
         elif action == 'edit_expense':
             item_id = request.form.get('item_id')
+            print(item_id)
             session['item_data'] = get_data(item_id, expense_data)
             return redirect(url_for('edit', item_id=item_id, tran="Expenses"))
 
@@ -114,7 +115,7 @@ def edit(tran, item_id):
         action = request.form.get('action')  # Which Button was clicked
 
         if action == "save":
-            data = unpack_data(request.form)
+            data = pack_data(request.form, item_id)
             update_row(sheet=tran, row=f"{int(item_id)+1}", info=data)
 
         return redirect(url_for("tracker"))
