@@ -16,7 +16,6 @@ def read_data(sheet):
     response = requests.get(BASE_URL, params=params)
     return response.json()
 
-# print(read_data("Income"))
 
 # === 2. CREATE ROW (POST) ===
 def create_row(sheet, info):
@@ -24,18 +23,9 @@ def create_row(sheet, info):
         "action": "create",
         "sheet": sheet,
         "data": info
-        # "data": {
-        #     "Date": "03-06-2025",
-        #     "Description": "Test",
-        #     "Amount": 101,
-        #     "Method": "Card"
-        # }
     }
     response = requests.post(BASE_URL, json=data)
     print(response.text)
-
-
-# create_row("Expenses")
 
 
 # === 3. UPDATE ROW (POST) ===
@@ -45,18 +35,16 @@ def update_row(sheet, row, info):
         "sheet": sheet,
         "row": row,
         "data": info
-        # "data": {
-        #     "Date": "03-06-2025",
-        #     "Description": "Test",
-        #     "Amount": 101,
-        #     "Method": "Cash"
-        # }
     }
     response = requests.post(BASE_URL, json=data)
     print(response.text)
 
 
-# update_row("Expenses", 4)
+# print(update_row(sheet='Expenses', row='2', info={"ID": "1",
+#                                        "Date": "10-05-2026",
+#                                        "Description": "Investments",
+#                                        "Amount": 20000,
+#                                        "Method": "Account",}))
 
 
 # === 4. DELETE ROW (POST) ===
@@ -70,9 +58,6 @@ def delete_row(sheet, row):
     print(response.text)
 
 
-# delete_row("Expenses", 4)
-
-
 # === 5. CREATE NEW SHEET (POST) ===
 def create_sheet(new_name):
     data = {
@@ -81,9 +66,6 @@ def create_sheet(new_name):
     }
     response = requests.post(BASE_URL, json=data)
     print(response.text)
-
-
-# create_sheet("CreditCard")
 
 
 # === 6. DELETE SHEET (POST) ===
@@ -95,8 +77,6 @@ def delete_sheet(sheet_name):
     response = requests.post(BASE_URL, json=data)
     print(response.text)
 
-
-# delete_sheet("CreditCard")
 
 def convert_to_dict(data):
     """

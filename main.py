@@ -1,5 +1,4 @@
 import os
-import requests
 
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_bootstrap import Bootstrap
@@ -8,7 +7,7 @@ from werkzeug.security import check_password_hash
 from dotenv import load_dotenv
 from datetime import datetime
 
-from helper import get_data, get_total
+from helper import get_data, get_total, unpack_data
 from API import read_data, update_row, create_row, create_sheet, delete_sheet, delete_row, convert_to_dict
 
 load_dotenv()
@@ -80,17 +79,7 @@ def tracker():
         action = request.form.get('action')  # Which Button was clicked
 
         if action == 'income' or action == 'expense':
-            description = request.form.get('description')
-            amount = float(request.form.get('amount'))
-            method = request.form.get('method')
-            tran_date = request.form.get('date')
-            data = {
-                "date": tran_date,
-                "description": description,
-                "amount": amount,
-                "method": method
-            }
-
+            data = unpack_data(request.form)
             create_row(sheet="Income", info=data) if action == 'income' else create_row(sheet="Expenses", info=data)
 
 
@@ -125,17 +114,8 @@ def edit(tran, item_id):
         action = request.form.get('action')  # Which Button was clicked
 
         if action == "save":
-            description = request.form.get('description')
-            amount = float(request.form.get('amount'))
-            method = request.form.get('method')
-            tran_date = request.form.get('date')
-            data = {
-                    "date": tran_date,
-                    "description": description,
-                    "amount": amount,
-                    "method": method
-                }
-            update_row(sheet=tran, row=item_id, info=data)
+            data = unpack_data(request.form)
+            update_row(sheet=tran, row=f"{int(item_id)+1}", info=data)
 
         return redirect(url_for("tracker"))
 
