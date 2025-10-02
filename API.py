@@ -40,13 +40,6 @@ def update_row(sheet, row, info):
     print(response.text)
 
 
-# print(update_row(sheet='Expenses', row='2', info={"ID": "1",
-#                                        "Date": "10-05-2026",
-#                                        "Description": "Investments",
-#                                        "Amount": 20000,
-#                                        "Method": "Account",}))
-
-
 # === 4. DELETE ROW (POST) ===
 def delete_row(sheet, row):
     data = {

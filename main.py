@@ -23,8 +23,8 @@ PASSWORD = os.getenv("PASSWORD")
 
 
 class User(UserMixin):
-    def __init__(self, id, email, password):
-        self.id = id
+    def __init__(self, user_id, email, password):
+        self.id = user_id
         self.email = email
         self.password = password
 
@@ -32,7 +32,7 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     if user_id == "1":
-        return User(id="1", email=USER, password=PASSWORD)
+        return User(user_id="1", email=USER, password=PASSWORD)
     return None
 
 
@@ -48,7 +48,7 @@ def login():
         password = request.form.get("password")
 
         if email == USER and check_password_hash(PASSWORD, password):
-            user = User(id="1", email=email, password=PASSWORD)
+            user = User(user_id="1", email=email, password=PASSWORD)
             login_user(user)
             return redirect(url_for("tracker"))
         else:
@@ -63,11 +63,6 @@ def login():
 def tracker():
     income_data = convert_to_dict(read_data("Income"))
     expense_data = convert_to_dict(read_data("Expenses"))
-
-    # income_data = [{'date': '2025-05-01', 'description': 'Salary', 'amount': 49840, 'method': 'Account', 'id': 2}]
-    # expense_data = [{'date': '2025-05-04', 'description': 'Rent', 'amount': 16500, 'method': 'Cash', 'id': 2},
-    #                 {'date': '2025-05-10', 'description': 'Investments', 'amount': 20000, 'method': 'Account', 'id': 3},
-    #                 {'date': '2025-05-24', 'description': 'Flight tickets', 'amount': 3588, 'method': 'Card', 'id': 4}]
 
     total_income = get_total(income_data)
     total_expenses = get_total(expense_data)
@@ -85,6 +80,7 @@ def tracker():
 
         elif action == 'edit_income':
             item_id = request.form.get('item_id')
+            print(item_id)
             session['item_data'] = get_data(item_id, income_data)
             return redirect(url_for('edit', item_id=item_id, tran="Income"))
 
@@ -93,7 +89,6 @@ def tracker():
 
         elif action == 'edit_expense':
             item_id = request.form.get('item_id')
-            print(item_id)
             session['item_data'] = get_data(item_id, expense_data)
             return redirect(url_for('edit', item_id=item_id, tran="Expenses"))
 
