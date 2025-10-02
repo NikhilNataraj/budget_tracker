@@ -1,15 +1,26 @@
--- Delete existing tables to start fresh
+-- Drop tables in reverse order of dependency
 DROP TABLE IF EXISTS income;
 DROP TABLE IF EXISTS expense;
 DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS users;
 
--- Create the 'books' table to store different budget books
-CREATE TABLE books (
+
+-- Create the 'users' table to store user credentials
+CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL
 );
 
--- Create the 'income' table with a foreign key linking to the 'books' table
+-- Create the 'books' table, now linked to a user
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+-- Create the 'income' table, linked to a book
 CREATE TABLE income (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date TEXT NOT NULL,
@@ -20,7 +31,7 @@ CREATE TABLE income (
     FOREIGN KEY (book_id) REFERENCES books (id)
 );
 
--- Create the 'expense' table with a foreign key linking to the 'books' table
+-- Create the 'expense' table, linked to a book
 CREATE TABLE expense (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date TEXT NOT NULL,
@@ -30,7 +41,3 @@ CREATE TABLE expense (
     book_id INTEGER NOT NULL,
     FOREIGN KEY (book_id) REFERENCES books (id)
 );
-
--- Insert a default book to start with
-INSERT INTO books (name) VALUES ('Default Book');
-
