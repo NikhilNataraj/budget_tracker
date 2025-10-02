@@ -32,7 +32,7 @@
     />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -43,19 +43,19 @@
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-5">
           <form class="edit-record-form bg-white p-5 rounded shadow-lg" method="POST"
-                action="{{ url_for('edit', tran=tran, item_id=id) }}">
+                action="{{ url_for('edit', tran_type=tran_type, item_id=item.id) }}">
             <!-- Title -->
             <h2 class="text-center mb-4">Edit Record</h2>
 
             <!-- DESCRIPTION -->
             <div class="form-outline mb-4">
-              <input type="text" id="registerName" class="form-control" name="description" value="{{ description }}" />
+              <input type="text" id="registerName" class="form-control" name="description" value="{{ item.description }}" required />
               <label class="form-label" for="registerName">Description</label>
             </div>
 
             <!-- AMOUNT -->
             <div class="form-outline mb-4">
-              <input type="number" class="form-control" name="amount" value="{{ amount }}">
+              <input type="number" step="0.01" class="form-control" name="amount" value="{{ item.amount }}" required>
               <label class="form-label">Amount</label>
             </div>
 
@@ -63,7 +63,7 @@
             <!-- METHOD -->
             <div class="form-outline mb-4">
               <select class="form-select" name="method">
-                <option selected>{{ method }}</option>
+                <option selected>{{ item.method }}</option>
                 <option value="Account">Account</option>
                 <option value="Cash">Cash</option>
                 <option value="Card">Card</option>
@@ -73,7 +73,7 @@
 
             <!--DATE-->
             <div class="date-container input-group" style="margin-bottom: 20px;">
-                <input type="text" name="date" id="datepicker" class="form-control" value="{{ date }}" readonly />
+                <input type="text" name="date" id="datepicker" class="form-control" value="{{ item.date }}" readonly required/>
                 <button type="button" class="btn btn-outline-secondary" id="open-datepicker">
                   <!-- calendar icon -->
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

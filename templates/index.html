@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:100,300,400,600" rel="stylesheet" type="text/css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
         <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
         <!-- Flatpickr CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -39,9 +39,7 @@
 
         <!--  Sidebar   -->
         <a href="{{ url_for('logout') }}">
-<!--            <button type="button" class="btn btn-light">-->
-                <img  class="logout-link" src="static/logout-icon.png" alt="Logout">
-<!--            </button>-->
+            <img  class="logout-link" src="static/logout-icon.png" alt="Logout">
         </a>
 
         <!--  Total Income and Expense for the Month   -->
@@ -52,18 +50,16 @@
                 </div>
 
                 <div class="budget__value">
-                    {% if total_income - total_expenses > 0 %}
+                    {% if total_income - total_expenses >= 0 %}
                         +
-                    {% else %}
-                        -
                     {% endif %}
-                    {{ total_income - total_expenses }}
+                    {{ "%.2f"|format(total_income - total_expenses) }}
                 </div>
 
                 <div class="budget__income clearfix">
                     <div class="budget__income--text">Income</div>
                     <div class="right">
-                        <div class="budget__income--value">+ {{ total_income }}</div>
+                        <div class="budget__income--value">+ {{ "%.2f"|format(total_income) }}</div>
                         <div class="budget__income--percentage">&nbsp;</div>
                     </div>
                 </div>
@@ -71,7 +67,7 @@
                 <div class="budget__expenses clearfix">
                     <div class="budget__expenses--text">Expenses</div>
                     <div class="right clearfix">
-                        <div class="budget__expenses--value">- {{ total_expenses }}</div>
+                        <div class="budget__expenses--value">- {{ "%.2f"|format(total_expenses) }}</div>
                         <div class="budget__expenses--percentage">{{ total_exp_percent }}%</div>
                     </div>
                 </div>
@@ -87,7 +83,7 @@
                         <div class="d-flex align-items-center flex-wrap gap-2">
                             <!-- DATE PICKER  -->
                             <div class="date-container input-group">
-                              <input type="text" name="date" id="datepicker" class="form-control" placeholder="Select date" readonly />
+                              <input type="text" name="date" id="datepicker" class="form-control" placeholder="Select date" readonly required/>
                               <button type="button" class="btn btn-outline-secondary" id="open-datepicker">
                                 <!-- calendar icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -98,8 +94,8 @@
                               </button>
                             </div>
 
-                            <input type="text" class="add__description" name="description" placeholder="Add description">
-                            <input type="number" class="add__value" name="amount" placeholder="Value">
+                            <input type="text" class="add__description" name="description" placeholder="Add description" required>
+                            <input type="number" step="0.01" class="add__value" name="amount" placeholder="Value" required>
                             <select class="add_method" name="method">
                                 <option value="Account">Account</option>
                                 <option value="Cash">Cash</option>
@@ -120,14 +116,14 @@
                     <div class="income__list">
                         <form method="POST" action="{{ url_for('tracker') }}">
                             {% for inc in income %}
-                            <div class="item clearfix" id="income-0">
-                                <div class="item__description">{{ inc['Description'] }}</div>
+                            <div class="item clearfix" id="income-{{ inc.id }}">
+                                <div class="item__description">{{ inc['description'] }}</div>
                                 <div class="right clearfix">
-                                    <div class="item__value">+ {{ inc['Amount'] }}</div>
+                                    <div class="item__value">+ {{ "%.2f"|format(inc['amount']) }}</div>
                                     <div class="button-container" style="display: flex; gap: 7px;">
                                         <!--EDIT BUTTON-->
                                         <div class="item__delete">
-                                            <input type="hidden" name="item_id" value="{{ inc['ID'] }}">
+                                            <input type="hidden" name="item_id" value="{{ inc['id'] }}">
                                             <button class="item__delete--btn" type="submit" name="action"
                                                     value="edit_income">
                                                 <i class="ion-ios-close-outline">
@@ -139,7 +135,7 @@
                                         </div>
                                        <!-- DELETE BUTTON -->
                                         <div class="item__delete">
-                                            <input type="hidden" name="item_id" value="{{ inc['ID'] }}">
+                                            <input type="hidden" name="item_id" value="{{ inc['id'] }}">
                                             <button class="item__delete--btn" type="submit" name="action"
                                                     value="delete_income">
                                                 <i class="ion-ios-close-outline">
@@ -163,11 +159,11 @@
                     <h2 class="expenses__title">Expenses</h2>
                     <div class="expenses__list">
                         {% for exp in expense %}
-                        <div class="item clearfix" id="expense-{{ exp['ID'] }}"> {# Good practice to use actual ID for unique element IDs #}
-                            <div class="item__description">{{ exp['Description'] }}</div>
+                        <div class="item clearfix" id="expense-{{ exp['id'] }}">
+                            <div class="item__description">{{ exp['description'] }}</div>
                             <div class="right clearfix">
-                                <div class="item__value">- {{ exp['Amount'] }}</div>
-                                {% set percentage = (exp['Amount'] / total_expenses * 100) if total_expenses > 0 else 0 %}
+                                <div class="item__value">- {{ "%.2f"|format(exp['amount']) }}</div>
+                                {% set percentage = (exp['amount'] / total_income * 100) if total_income > 0 else 0 %}
                                 <div class="item__percentage">
                                   {% if percentage < 1 and percentage > 0 %}
                                     &lt;1%
@@ -178,7 +174,7 @@
                                 <div class="button-container" style="display: flex; gap: 7px;">
                                     <div class="item__delete">
                                         <form method="POST" action="{{ url_for('tracker') }}" style="display: inline;">
-                                            <input type="hidden" name="item_id" value="{{ exp['ID'] }}">
+                                            <input type="hidden" name="item_id" value="{{ exp['id'] }}">
                                             <button class="item__delete--btn" type="submit" name="action"
                                                     value="edit_expense">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
@@ -189,7 +185,7 @@
                                     </div>
                                     <div class="item__delete">
                                         <form method="POST" action="{{ url_for('tracker') }}" style="display: inline;">
-                                            <input type="hidden" name="item_id" value="{{ exp['ID'] }}">
+                                            <input type="hidden" name="item_id" value="{{ exp['id'] }}">
                                             <button class="item__delete--btn" type="submit" name="action" value="delete_expense">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                                   <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
@@ -213,7 +209,8 @@
           const datepickerInput = document.getElementById('datepicker');
           const picker = flatpickr(datepickerInput, {
             dateFormat: "Y-m-d",
-            allowInput: true
+            allowInput: true,
+            defaultDate: "today"
           });
 
           document.getElementById('open-datepicker').addEventListener('click', () => {
