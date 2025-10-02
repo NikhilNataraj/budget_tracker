@@ -10,8 +10,15 @@
         <title>Budget Tracker - {% if current_book %}{{ current_book.name }}{% else %}Welcome{% endif %}</title>
     </head>
     <body>
-        <!-- Sidebar and Modals (No changes here) -->
-        <button class="btn btn-light sidebar-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layout-sidebar-inset" viewBox="0 0 16 16"><path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/><path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg></button>
+<!--    Navbar        -->
+        <nav class="navbar bg-light">
+          <div class="container-fluid">
+              <button class="btn btn-light sidebar-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layout-sidebar-inset" viewBox="0 0 16 16"><path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/><path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg></button>
+              <a href="{{ url_for('logout') }}" title="Logout"><img class="logout-link" src="{{ url_for('static', filename='logout-icon.png') }}" alt="Logout"></a>
+          </div>
+        </nav>
+
+        <!-- Sidebar and Modals -->
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
           <div class="offcanvas-header"><h5 class="offcanvas-title" id="offcanvasScrollingLabel">My Books</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
           <div class="offcanvas-body">
@@ -20,16 +27,12 @@
           </div>
         </div>
         {% if books %}{% for book in books %}<div class="modal fade" id="deleteBookModal-{{ book.id }}" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Confirm Deletion</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">Are you sure you want to delete "<strong>{{ book.name }}</strong>"? This will also delete all of its transactions.</div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><form action="{{ url_for('delete_book_route', book_name=book.name) }}" method="POST"><button type="submit" class="btn btn-danger">Delete Book</button></form></div></div></div></div>{% endfor %}{% endif %}
-        <a href="{{ url_for('logout') }}" title="Logout"><img class="logout-link" src="{{ url_for('static', filename='logout-icon.png') }}" alt="Logout"></a>
 
         <!-- Main Content -->
         {% if current_book %}
         <div class="top">
             <div class="budget">
-                <!-- UPDATED TITLE TO SHOW FILTER PERIOD -->
-                <div class="budget__title">
-                    Available Budget for <span class="fw-bold">{{ current_book.name }}</span> in <span class="budget__title--month">{{ display_period }}</span>:
-                </div>
+                <div class="budget__title">Available Budget for <span class="fw-bold">{{ current_book.name }}</span> in <span class="budget__title--month">{{ display_period }}</span>:</div>
                 <div class="budget__value">{% if total_income - total_expenses >= 0 %}+{% endif %} {{ "%.2f"|format(total_income - total_expenses) }}</div>
                 <div class="budget__income clearfix"><div class="budget__income--text">Income</div><div class="right"><div class="budget__income--value">+ {{ "%.2f"|format(total_income) }}</div><div class="budget__income--percentage">&nbsp;</div></div></div>
                 <div class="budget__expenses clearfix"><div class="budget__expenses--text">Expenses</div><div class="right clearfix"><div class="budget__expenses--value">- {{ "%.2f"|format(total_expenses) }}</div><div class="budget__expenses--percentage">{{ total_exp_percent }}%</div></div></div>
@@ -39,12 +42,12 @@
         <div class="bottom">
             <div class="add">
                 <div class="add__container">
-                    <!-- NEW: DATE RANGE FILTER FORM -->
+                    <!-- DATE RANGE FILTER FORM -->
                     <form method="GET" action="{{ url_for('tracker', book_name=current_book.name) }}" class="mb-4">
-                        <div class="d-flex justify-content-center align-items-center flex-wrap gap-2">
+                        <div class="d-flex justify-content-center align-items-end flex-wrap gap-2">
                             <div class="form-group"><label for="start_date" class="form-label me-2">From:</label><input type="text" id="start_date_picker" name="start_date" class="form-control" value="{{ start_date }}"></div>
                             <div class="form-group"><label for="end_date" class="form-label me-2">To:</label><input type="text" id="end_date_picker" name="end_date" class="form-control" value="{{ end_date }}"></div>
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-outline-info">Filter</button>
                         </div>
                     </form>
                     <hr>
@@ -63,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- Transaction Lists (No changes here) -->
             <div class="container clearfix">
                 <div class="income"><h2 class="income__title">Income</h2><div class="income__list"><form method="POST" action="{{ url_for('tracker', book_name=current_book.name, start_date=start_date, end_date=end_date) }}">{% for inc in income %}<div class="item clearfix" id="income-{{ inc.id }}"><div class="item__description">{{ inc.date }} - {{ inc['description'] }}</div><div class="right clearfix"><div class="item__value">+ {{ "%.2f"|format(inc['amount']) }}</div><div class="button-container" style="display: flex; gap: 7px;"><div class="item__delete"><input type="hidden" name="item_id" value="{{ inc['id'] }}"><button class="item__delete--btn" type="submit" name="action" value="edit_income"><i class="ion-ios-close-outline"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16"><path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001"/></svg></i></button></div><div class="item__delete"><input type="hidden" name="item_id" value="{{ inc['id'] }}"><button class="item__delete--btn" type="submit" name="action" value="delete_income"><i class="ion-ios-close-outline"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/></svg></i></button></div></div></div></div>{% endfor %}</form></div></div>
                 <div class="expenses"><h2 class="expenses__title">Expenses</h2><div class="expenses__list">{% for exp in expense %}<div class="item clearfix" id="expense-{{ exp['id'] }}"><div class="item__description">{{ exp.date }} - {{ exp['description'] }}</div><div class="right clearfix"><div class="item__value">- {{ "%.2f"|format(exp['amount']) }}</div>{% set percentage = (exp['amount'] / total_income * 100) if total_income > 0 else 0 %}<div class="item__percentage">{% if percentage < 1 and percentage > 0 %}&lt;1%{% else %}{{ percentage | round(0) | int }}%{% endif %}</div><div class="button-container" style="display: flex; gap: 7px;"><div class="item__delete"><form method="POST" action="{{ url_for('tracker', book_name=current_book.name, start_date=start_date, end_date=end_date) }}" style="display: inline;"><input type="hidden" name="item_id" value="{{ exp['id'] }}"><button class="item__delete--btn" type="submit" name="action" value="edit_expense"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16"><path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001"/></svg></button></form></div><div class="item__delete"><form method="POST" action="{{ url_for('tracker', book_name=current_book.name, start_date=start_date, end_date=end_date) }}" style="display: inline;"><input type="hidden" name="item_id" value="{{ exp['id'] }}"><button class="item__delete--btn" type="submit" name="action" value="delete_expense"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/></svg></button></form></div></div></div></div>{% endfor %}</div></div>
@@ -73,17 +75,22 @@
         <div class="container text-center" style="margin-top: 100px;"><h1>Welcome to Your Budget Tracker</h1><p class="lead">You don't have any budget books yet. Create one from the sidebar to get started!</p></div>
         {% endif %}
 
+        <footer class="text-center text-lg-start bg-light text-muted mt-auto">
+          <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.01);">
+            © 2025 Copyright:
+            <a class="text-reset fw-bold" href="#">BudgetTracker.com</a>
+          </div>
+        </footer>
+
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
-          // For the main transaction entry
           const datepickerInput = document.getElementById('datepicker');
           if (datepickerInput) {
             flatpickr(datepickerInput, { dateFormat: "Y-m-d", defaultDate: "today" });
             document.getElementById('open-datepicker').addEventListener('click', () => { datepickerInput._flatpickr.open(); });
           }
-
-          // For the new filter inputs
           flatpickr("#start_date_picker", { dateFormat: "Y-m-d" });
           flatpickr("#end_date_picker", { dateFormat: "Y-m-d" });
         </script>
