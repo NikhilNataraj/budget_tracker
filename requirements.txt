@@ -1,0 +1,6 @@
+Flask
+Flask-Bootstrap
+Flask-Login
+werkzeug
+python-dotenv
+psycopg2-binary

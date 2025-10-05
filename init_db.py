@@ -1,16 +1,24 @@
-import sqlite3
+import os
+import psycopg2
+from dotenv import load_dotenv
 
-# This script is used to initialize the database for the first time.
+# Load environment variables from .env file
+load_dotenv()
 
-# Connect to the database file (it will be created if it doesn't exist)
-connection = sqlite3.connect('budget.db')
+print("Connecting to the PostgreSQL database...")
+# Connect to the database using the URL from the environment variables
+conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+cur = conn.cursor()
 
+print("Reading schema.sql file...")
 # Read the schema.sql file and execute the SQL commands within it
 with open('schema.sql') as f:
-    connection.executescript(f.read())
+    cur.execute(f.read())
 
+print("Committing changes...")
 # Commit the changes and close the connection
-connection.commit()
-connection.close()
+conn.commit()
+cur.close()
+conn.close()
 
-print("Database 'budget.db' initialized successfully.")
+print("PostgreSQL database initialized successfully.")
