@@ -150,7 +150,6 @@ def tracker(book_name):
                            display_period=display_period)  # Pass formatted period to template
 
 
-# All other routes (add_book, delete_book_route, edit, logout) remain the same
 @app.route("/add_book", methods=["POST"])
 @login_required
 def add_book():
@@ -200,6 +199,11 @@ def edit(book_name, tran_type, item_id):
         return redirect(url_for("tracker", book_name=book_name))
     return render_template("edit.html", item=item, tran_type=tran_type, book_name=book_name)
 
+
+@app.route("/analytics/<book>", methods=["GET", "POST"])
+@login_required
+def analytics(book):
+    return render_template("analytics.html", book=book)
 
 @app.route("/logout")
 @login_required
