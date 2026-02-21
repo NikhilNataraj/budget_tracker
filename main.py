@@ -200,10 +200,27 @@ def edit(book_name, tran_type, item_id):
     return render_template("edit.html", item=item, tran_type=tran_type, book_name=book_name)
 
 
-@app.route("/analytics/<book>", methods=["GET", "POST"])
+@app.route("/analytics/<book_name>")
 @login_required
-def analytics(book):
-    return render_template("analytics.html", book=book)
+def analytics(book_name):
+    book = database.get_book_by_name(book_name, current_user.id)
+    book_id = book['id']
+
+    # Helper to aggregate data
+    def aggregate(transactions):
+        data = {}
+        for t in transactions:
+            data[t['description']] = data.get(t['description'], 0) + float(t['amount'])
+        return list(data.keys()), list(data.values())
+
+    inc_labels, inc_values = aggregate(database.get_transactions('income', book_id))
+    exp_labels, exp_values = aggregate(database.get_transactions('expense', book_id))
+
+    return render_template("analytics.html",
+                           book=book,
+                           inc_labels=inc_labels, inc_values=inc_values,
+                           exp_labels=exp_labels, exp_values=exp_values,
+                           total_income=sum(inc_values), total_expense=sum(exp_values))
 
 @app.route("/logout")
 @login_required

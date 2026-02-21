@@ -1,17 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:100,300,400,600" rel="stylesheet" type="text/css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
-  <title>Analytics</title>
-<!--  - {% if current_book %}{{ current_book.name }}{% else %}Welcome{% endif %}-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - {{ book['name'] }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container { position: relative; height: 400px; width: 100%; }
+        .card { border-radius: 15px; }
+    </style>
 </head>
-<body>
-  <h1>Analytics for {{book[2]}}</h1>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Analytics: {{ book['name'] }}</h1>
+        <a href="{{ url_for('tracker', book_name=book['name']) }}" class="btn btn-outline-secondary">Back to Tracker</a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow-sm mb-3">
+                <div class="card-body text-center">
+                    <h6>Total Income</h6>
+                    <h3>{{ "%.2f"|format(total_income) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white shadow-sm mb-3">
+                <div class="card-body text-center">
+                    <h6>Total Expenses</h6>
+                    <h3>{{ "%.2f"|format(total_expense) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow-sm mb-3">
+                <div class="card-body text-center">
+                    <h6>Net Balance</h6>
+                    <h3>{{ "%.2f"|format(total_income - total_expense) }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white text-center py-3">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-success active" id="btnIncome" onclick="updateChart('income')">Income Breakdown</button>
+                <button type="button" class="btn btn-outline-danger" id="btnExpense" onclick="updateChart('expense')">Expense Breakdown</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="analyticsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data passed from Flask
+    const incData = {
+        labels: {{ inc_labels|tojson }},
+        values: {{ inc_values|tojson }},
+        colors: ['#198754', '#20c997', '#0dcaf0', '#0d6efd', '#6610f2', '#a2cf6e', '#14522d']
+    };
+
+    const expData = {
+        labels: {{ exp_labels|tojson }},
+        values: {{ exp_values|tojson }},
+        colors: ['#dc3545', '#fd7e14', '#ffc107', '#d63384', '#6f42c1', '#b02a37', '#831010']
+    };
+
+    const ctx = document.getElementById('analyticsChart').getContext('2d');
+
+    // Initialize Chart with Income data
+    let analyticsChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: incData.labels,
+            datasets: [{
+                data: incData.values,
+                backgroundColor: incData.colors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    function updateChart(type) {
+        const source = (type === 'income') ? incData : expData;
+
+        // Update data and colors
+        analyticsChart.data.labels = source.labels;
+        analyticsChart.data.datasets[0].data = source.values;
+        analyticsChart.data.datasets[0].backgroundColor = source.colors;
+
+        // Update UI buttons
+        document.getElementById('btnIncome').classList.toggle('active', type === 'income');
+        document.getElementById('btnExpense').classList.toggle('active', type === 'expense');
+
+        analyticsChart.update();
+    }
+</script>
 
 </body>
 </html>
